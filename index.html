@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, initial-scale=1">
+  <title>从零 Vibe Coding 一个自己的应用</title>
+  <link rel="stylesheet" href="assets/bmw-m.css">
+  <style>
+    .deck { --scale: 1; }
+    .slide { transform: scale(var(--scale)); }
+
+    .progress {
+      position: absolute;
+      left: var(--margin);
+      right: var(--margin);
+      bottom: 40px;
+      height: 2px;
+      background: var(--hairline);
+      z-index: 6;
+    }
+    .progress > i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--m-red);
+      transition: width 280ms var(--ease);
+    }
+    .page-num {
+      position: absolute;
+      right: var(--margin);
+      bottom: 56px;
+      color: var(--muted);
+      z-index: 6;
+    }
+    .section-kicker {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .section-kicker::before {
+      content: "";
+      width: 88px;
+      height: 8px;
+      background: var(--m-blue-light);
+      display: block;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      width: 100%;
+      align-items: stretch;
+    }
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      width: 100%;
+      align-items: stretch;
+    }
+    .four-col {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      width: 100%;
+      align-items: stretch;
+    }
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--hairline);
+      border-left: 1px solid var(--hairline);
+      width: 100%;
+    }
+    .step {
+      min-height: 150px;
+      border-right: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+      padding: 32px;
+      background: var(--surface-card);
+    }
+    .step .idx,
+    .spec-cell .idx {
+      display: block;
+      color: var(--m-blue-light);
+      font-family: var(--mono);
+      font-size: 28px;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+    .step .txt {
+      color: var(--on-dark);
+      font-size: 44px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+    .spec-cell {
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .spec-cell .title {
+      font-size: 48px;
+      line-height: 1.22;
+      font-weight: 700;
+      color: var(--on-dark);
+    }
+    .spec-cell .desc {
+      font-size: 34px;
+      line-height: 1.35;
+      color: var(--body);
+    }
+    .prompt-box {
+      width: 100%;
+      background: var(--surface-soft);
+      border: 1px solid var(--hairline);
+      padding: 40px;
+      color: var(--body-strong);
+      font-family: var(--mono);
+      font-size: 34px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+    .mini-prompt {
+      background: var(--surface-soft);
+      border-left: 4px solid var(--m-blue-light);
+      padding: 28px 32px;
+      font-family: var(--mono);
+      font-size: 32px;
+      line-height: 1.45;
+      color: var(--body-strong);
+      white-space: pre-wrap;
+    }
+    .formula {
+      display: grid;
+      grid-template-columns: 1fr 80px 1fr 80px 1fr;
+      align-items: center;
+      width: 100%;
+      gap: 24px;
+    }
+    .formula .op {
+      color: var(--m-red);
+      font-size: 88px;
+      text-align: center;
+      font-weight: 800;
+    }
+    .formula .block {
+      border: 1px solid var(--hairline);
+      background: var(--surface-card);
+      padding: 48px 32px;
+      min-height: 210px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 54px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+    .image-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 48px;
+      width: 100%;
+      align-items: stretch;
+    }
+    .image-frame {
+      border: 1px solid var(--hairline);
+      background: var(--surface-soft);
+      overflow: hidden;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.85) contrast(1.05);
+    }
+    .image-frame.contain img {
+      object-fit: contain;
+    }
+    .story-board {
+      display: grid;
+      grid-template-columns: 1.22fr 0.78fr;
+      gap: 40px;
+      width: 100%;
+      height: 588px;
+      align-items: stretch;
+    }
+    .story-case {
+      border: 1px solid var(--hairline);
+      background: var(--surface-card);
+      padding: 28px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .story-head {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 28px;
+      align-items: baseline;
+      border-bottom: 1px solid var(--hairline);
+      padding-bottom: 20px;
+    }
+    .story-head .group {
+      color: var(--m-blue-light);
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .story-head .name {
+      color: var(--on-dark);
+      font-size: 44px;
+      line-height: 1.18;
+      font-weight: 700;
+    }
+    .story-head .desc {
+      grid-column: 2;
+      color: var(--body);
+      font-size: 32px;
+      line-height: 1.3;
+    }
+    .story-shots {
+      display: grid;
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+    }
+    .story-shots.two {
+      grid-template-rows: 1fr 1fr;
+    }
+    .story-shot {
+      border: 1px solid var(--hairline);
+      background: var(--surface-soft);
+      overflow: hidden;
+      min-height: 0;
+    }
+    .story-shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: saturate(0.85) contrast(1.05);
+    }
+    .story-shots.two .story-shot img {
+      object-fit: cover;
+      object-position: top center;
+    }
+    .story-slide {
+      justify-content: flex-start;
+      gap: 22px;
+    }
+    .story-slide .story-title {
+      font-size: 72px;
+      line-height: 1.12;
+      font-weight: 700;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      border-top: 1px solid var(--hairline);
+      border-left: 1px solid var(--hairline);
+      font-size: 36px;
+      color: var(--body);
+    }
+    .table th,
+    .table td {
+      border-right: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+      padding: 24px 28px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .table th {
+      color: var(--on-dark);
+      background: var(--surface-card);
+      font-size: 32px;
+      letter-spacing: 0.08em;
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      width: 100%;
+    }
+    .pill {
+      border: 1px solid var(--hairline);
+      background: var(--surface-card);
+      padding: 22px 28px;
+      font-size: 38px;
+      line-height: 1.2;
+      color: var(--on-dark);
+      font-weight: 700;
+    }
+    .blue-line {
+      border-left: 4px solid var(--m-blue-light);
+      padding-left: 40px;
+    }
+    .speaker-strip {
+      width: 1180px;
+      max-width: 1180px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.2fr;
+      border-top: 1px solid var(--hairline);
+      border-left: 1px solid var(--hairline);
+      background: var(--surface-card);
+    }
+    .speaker-strip > div {
+      border-right: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+      padding: 28px 36px;
+      text-align: left;
+    }
+    .speaker-strip .meta-label {
+      display: block;
+      color: var(--m-blue-light);
+      font-family: var(--mono);
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: 0.08em;
+    }
+    .speaker-strip .meta-value {
+      color: var(--on-dark);
+      font-size: 42px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+    .snake-frame {
+      justify-content: flex-start;
+      gap: 18px;
+    }
+    .snake-frame .snake-title {
+      font-size: 64px;
+      line-height: 1.12;
+      font-weight: 700;
+    }
+    .snake-layout {
+      display: grid;
+      grid-template-columns: 600px 1fr;
+      gap: 48px;
+      width: 100%;
+      align-items: stretch;
+    }
+    .snake-stage,
+    .snake-panel {
+      border: 1px solid var(--hairline);
+      background: var(--surface-card);
+      padding: 24px;
+    }
+    .snake-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+    }
+    #snakeCanvas {
+      width: 520px;
+      height: 520px;
+      border: 1px solid var(--hairline);
+      background: var(--surface-soft);
+      display: block;
+    }
+    .snake-status {
+      width: 520px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--body);
+      font-size: 30px;
+      line-height: 1.25;
+      font-family: var(--mono);
+    }
+    .snake-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 22px;
+    }
+    .snake-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .snake-stat {
+      border: 1px solid var(--hairline);
+      padding: 20px;
+      background: var(--surface-soft);
+    }
+    .snake-stat .label {
+      display: block;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 24px;
+      margin-bottom: 12px;
+      letter-spacing: 0.08em;
+    }
+    .snake-stat .value {
+      color: var(--on-dark);
+      font-family: var(--mono);
+      font-size: 48px;
+      line-height: 1;
+      font-weight: 700;
+    }
+    .snake-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .snake-actions button {
+      border: 1px solid var(--hairline);
+      border-radius: 0;
+      background: var(--surface-soft);
+      color: var(--on-dark);
+      font-family: var(--sans);
+      font-size: 32px;
+      font-weight: 700;
+      padding: 18px 12px;
+      cursor: pointer;
+    }
+    .snake-actions button.primary {
+      background: var(--m-blue-light);
+      border-color: var(--m-blue-light);
+    }
+    .snake-actions button:active {
+      transform: translateY(1px);
+    }
+    .snake-rules {
+      border-top: 1px solid var(--hairline);
+      padding-top: 22px;
+      color: var(--body);
+      font-size: 32px;
+      line-height: 1.42;
+    }
+    .snake-rules strong {
+      color: var(--on-dark);
+    }
+    .slide .notes { display: none; }
+    .compact-title { max-width: 1500px; }
+    .wide-title { max-width: 1720px; }
+    .fit-title { font-size: 112px; line-height: 1.12; font-weight: 900; letter-spacing: -0.01em; }
+    .small-title { font-size: 80px; line-height: 1.2; font-weight: 700; }
+    .tiny-body { font-size: 32px; line-height: 1.45; color: var(--body); }
+    .cover-sub {
+      max-width: 1180px;
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="slide">
+      <div class="brand-mark">
+        <span class="m-mark m-mark-md"><i></i><i></i><i></i></span>
+        <span class="deck-label">VIBE CODING BOOTCAMP</span>
+      </div>
+
+      <section class="frame cover center is-active stack-lg">
+        <span class="t-label c-blue">棠联内部分享</span>
+        <h1 class="t-display-lg wide-title">VIBE CODING<br>我上我也行</h1>
+        <span class="m-slash"></span>
+        <div class="speaker-strip">
+          <div><span class="meta-label">SPEAKER</span><span class="meta-value">程立</span></div>
+          <div><span class="meta-label">DEPT</span><span class="meta-value">数智技术部</span></div>
+          <div><span class="meta-label">ROLE</span><span class="meta-value">AI算法工程师</span></div>
+        </div>
+        <aside class="notes">正式开场页。先交代这是棠联内部分享，再用“我上我也行”把非技术同学的心理门槛降下来。</aside>
+      </section>
+
+      <section class="frame cover center stack-lg">
+        <h1 class="t-display-lg wide-title">从零 VIBE CODING<br>一个自己的应用</h1>
+        <span class="m-slash"></span>
+        <p class="t-title-md c-body cover-sub">面向业务同学 · 不背术语 · 今天结束时拿到一个能用的 App</p>
+        <aside class="notes">开场承诺要非常明确：今天不是学一堆术语，而是带大家从一个想法走到一个能打开、能演示、能继续迭代的小应用。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">PROMISE</span>
+        <h2 class="t-display-sm compact-title">今天带走三样东西</h2>
+        <div class="three-col">
+          <div class="spec-cell"><span class="idx">01</span><div class="title">一个能打开的应用</div><div class="desc">评论抓取与分析助手，现场从 0 做到能跑。</div></div>
+          <div class="spec-cell"><span class="idx">02</span><div class="title">一套可复用流程</div><div class="desc">把任何点子拆成 AI 能执行、你能验收的步骤。</div></div>
+          <div class="spec-cell"><span class="idx">03</span><div class="title">一组可抄 Prompt</div><div class="desc">卡住时按模板说，不靠灵感临场发挥。</div></div>
+        </div>
+        <aside class="notes">强调“能带走”而不是“听懂”。让听众知道这堂课的产出是一个工具、一套流程、一份小抄。</aside>
+      </section>
+
+      <section class="frame left story-slide">
+        <span class="t-label c-blue">REAL STORIES</span>
+        <h2 class="story-title">做出东西的，不一定是程序员</h2>
+        <div class="story-board">
+          <div class="story-case">
+            <div class="story-head">
+              <span class="group">LOGISTICS</span>
+              <span class="name">物流组李清</span>
+              <span class="desc">开发了关务单证管理系统。</span>
+            </div>
+            <div class="story-shots two">
+              <div class="story-shot"><img src="assets/images/customs-home.jpg" alt="关务单证管理系统首页截图"></div>
+              <div class="story-shot"><img src="assets/images/customs-form.jpg" alt="关务单证管理系统新建单证截图"></div>
+            </div>
+          </div>
+          <div class="story-case">
+            <div class="story-head">
+              <span class="group">CUSTOMER</span>
+              <span class="name">客户满意部高创伟</span>
+              <span class="desc">开发个人工具启动器。</span>
+            </div>
+            <div class="story-shots">
+              <div class="story-shot"><img src="assets/images/tool-launcher.jpg" alt="个人工具启动器截图"></div>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">这页用于卸下“我不是技术所以学不会”的心理负担。关键句：他们只是把每天要做的一件麻烦事说清楚，交给 AI。</aside>
+      </section>
+
+      <section class="frame center stack-xl">
+        <span class="t-label c-blue">MAIN IDEA</span>
+        <blockquote class="pull-quote">不是教你写代码，是教你把想法说清楚、把结果盯到底。</blockquote>
+        <p class="t-body-lg c-body">真正决定成败的，是你知不知道自己想要什么。</p>
+        <aside class="notes">这是全场主线，最后一页会回收。把“写代码”替换成“表达意图 + 验收结果”。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">YOUR ROLE</span>
+        <h2 class="t-display-sm">你不是程序员，<br>你是项目负责人</h2>
+        <ol class="takeaways">
+          <li><span class="body">你负责：目标、规则、方向、验收。</span></li>
+          <li><span class="body">AI 负责：代码、页面、测试、排错。</span></li>
+          <li><span class="body">你再负责：确认它对不对、顺不顺、能不能给别人用。</span></li>
+        </ol>
+        <aside class="notes">非技术同事最容易误会“我不会写代码，所以不能做”。要换成“我是负责人，AI 是执行团队”。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">FULL MAP</span>
+        <h2 class="t-display-sm">从点子到发布，8 步</h2>
+        <div class="step-grid">
+          <div class="step"><span class="idx">01</span><span class="txt">点子</span></div>
+          <div class="step"><span class="idx">02</span><span class="txt">需求</span></div>
+          <div class="step"><span class="idx">03</span><span class="txt">规划</span></div>
+          <div class="step"><span class="idx">04</span><span class="txt">第一版</span></div>
+          <div class="step"><span class="idx">05</span><span class="txt">跑起来</span></div>
+          <div class="step"><span class="idx">06</span><span class="txt">迭代</span></div>
+          <div class="step"><span class="idx">07</span><span class="txt">收口</span></div>
+          <div class="step"><span class="idx">08</span><span class="txt">发布</span></div>
+        </div>
+        <aside class="notes">让大家记住这条线。新手最爱直接跳到“要代码”，高手先花两分钟说清楚要什么。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">30 SEC MAGIC</span>
+        <h2 class="fit-title wide-title">别急着学流程，先爽一把</h2>
+        <div class="prompt-box">用单个 HTML 文件做一个能玩的贪吃蛇小游戏，
+方向键控制，吃到食物加分，撞墙就重来。
+直接给我完整代码。</div>
+        <aside class="notes">现场要让大家真的玩一下。这个例子的目的不是讲技术，而是建立“一句话可以变成可运行东西”的直觉。</aside>
+      </section>
+
+      <section class="frame left snake-frame">
+        <span class="t-label c-blue">PLAYABLE DEMO</span>
+        <h2 class="snake-title">一句话，真的可以变成一个能玩的小游戏</h2>
+        <div class="snake-layout">
+          <div class="snake-stage">
+            <canvas id="snakeCanvas" width="600" height="600" aria-label="贪吃蛇小游戏画布"></canvas>
+            <div class="snake-status">
+              <span id="snakeStatus">点击“开始游戏”</span>
+              <span>方向键控制</span>
+            </div>
+          </div>
+          <div class="snake-panel">
+            <div class="snake-stats">
+              <div class="snake-stat"><span class="label">SCORE</span><span class="value" id="snakeScore">0</span></div>
+              <div class="snake-stat"><span class="label">BEST</span><span class="value" id="snakeBest">0</span></div>
+              <div class="snake-stat"><span class="label">SPEED</span><span class="value">120</span></div>
+            </div>
+            <div class="snake-actions">
+              <button class="primary" id="snakeStart" type="button">开始游戏</button>
+              <button id="snakePause" type="button">暂停</button>
+              <button id="snakeReset" type="button">重置</button>
+            </div>
+            <div class="snake-rules">
+              <p><strong>玩法：</strong>点击开始后，用键盘方向键控制移动。</p>
+              <p>吃到红点加分；撞墙或撞到自己，游戏结束。</p>
+              <p>这页就是刚才那段 Prompt 的现场结果。</p>
+            </div>
+          </div>
+        </div>
+        <aside class="notes">这里可以现场点击“开始游戏”，让大家看到一个真正可交互的 HTML 小应用。提醒大家：这只是 30 秒体验，后面会讲如何把同样流程用于工作工具。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">DIVISION</span>
+        <h2 class="t-display-sm">Chatbot vs Coding Agent</h2>
+        <div class="two-col">
+          <div class="spec-cell"><span class="idx">CHATBOT</span><div class="title">想清需求</div><div class="desc">整理 PRD、改写 Prompt、讨论方案。</div></div>
+          <div class="spec-cell"><span class="idx">CODING AGENT</span><div class="title">真正改文件</div><div class="desc">生成代码、跑项目、调试、测试、发布。</div></div>
+        </div>
+        <aside class="notes">很多新手在 Chatbot 里复制代码很累。Coding Agent 的价值是能直接操作项目文件，迭代更顺。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">TOOLS</span>
+        <h2 class="t-display-sm">工具会变，流程不变</h2>
+        <div class="pill-row">
+          <span class="pill">Claude Code</span>
+          <span class="pill">Codex</span>
+          <span class="pill">Cursor</span>
+          <span class="pill">Trae</span>
+          <span class="pill">WorkBuddy</span>
+        </div>
+        <p class="t-body-lg c-body">这堂课以 Claude Code 为例，换工具也能照着走。</p>
+        <aside class="notes">不要让大家纠结选哪个工具。今天学的是流程，工具只是工作台。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">WORKBENCH</span>
+        <h2 class="small-title">认识你的工作台</h2>
+        <div class="image-grid">
+          <div class="image-frame contain"><img src="assets/images/workbench.png" alt="Claude Code 工作台截图"></div>
+          <ol class="takeaways">
+            <li><span class="body">左边：文件区。</span></li>
+            <li><span class="body">中间：代码和文档显示区。</span></li>
+            <li><span class="body">右边：与 Agent 对话区。</span></li>
+          </ol>
+        </div>
+        <aside class="notes">强调“你 90% 的时间在聊天框里说话，代码区看看热闹就行”。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">CHECKLIST</span>
+        <h2 class="t-display-sm">开工前环境清单</h2>
+        <ol class="takeaways">
+          <li><span class="body">Chrome 浏览器。</span></li>
+          <li><span class="body">一个放项目文件的文件夹。</span></li>
+          <li><span class="body">VS Code 或 AI 编程工具。</span></li>
+          <li><span class="body">可选：大模型 API Key，用于 AI 分析。</span></li>
+        </ol>
+        <aside class="notes">这页是现场准备检查。API Key 不要提前吓人，说明只有 Part 8 进阶会用到。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">FIRST IDEA</span>
+        <h2 class="t-display-sm">第一个点子：小而完整</h2>
+        <div class="three-col">
+          <div class="spec-cell"><span class="idx">01</span><div class="title">一句话说清</div><div class="desc">说不清，就先砍小。</div></div>
+          <div class="spec-cell"><span class="idx">02</span><div class="title">单人能用</div><div class="desc">不需要别人配合，不需要登录注册。</div></div>
+          <div class="spec-cell"><span class="idx">03</span><div class="title">能演示</div><div class="desc">做完能当场打开给别人看。</div></div>
+        </div>
+        <aside class="notes">新手最大的问题是想法太大。完整比大重要，成功一次比什么都重要。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">WHERE IDEAS COME FROM</span>
+        <h2 class="t-display-sm">点子从每天的麻烦里来</h2>
+        <ol class="takeaways">
+          <li><span class="body">你每天手动重复的事。</span></li>
+          <li><span class="body">你嫌麻烦、要开很多页面拼结果的事。</span></li>
+          <li><span class="body">同事总来问你、可以自助化的事。</span></li>
+        </ol>
+        <aside class="notes">引导听众不要凭空想“酷应用”，而是想自己每天被什么烦到。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">VALIDATION</span>
+        <h2 class="t-display-sm">验证点子：问事实，不问观点</h2>
+        <div class="two-col">
+          <div class="spec-cell"><span class="idx">MOM TEST</span><div class="title">不要问“你觉得好吗”</div><div class="desc">问：“你上次怎么做？花了多久？”</div></div>
+          <div class="spec-cell"><span class="idx">JTBD</span><div class="title">盯住真正任务</div><div class="desc">运营要的不是评论列表，而是 5 分钟看懂不满点。</div></div>
+        </div>
+        <aside class="notes">对非技术同事讲两句就够：问事实，盯目标。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">CASE STUDY</span>
+        <h2 class="fit-title wide-title">App Store 评论抓取分析插件</h2>
+        <ol class="takeaways">
+          <li><span class="body">粘贴 App Store，选择国家和地区。</span></li>
+          <li><span class="body">一键抓取评论：评分、标题、正文、作者。</span></li>
+          <li><span class="body">展示统计，并让 AI 总结差评里问题和排优先级以及建议解决方案。</span></li>
+        </ol>
+        <aside class="notes">这个例子真实、有用、能演示。提醒：优先用公开评论 RSS/JSON 接口，不要让 AI 直接爬网页。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">THREE-PART BRIEF</span>
+        <h2 class="t-display-sm">全教程最重要的一页</h2>
+        <div class="formula">
+          <div class="block">目标</div>
+          <div class="op">+</div>
+          <div class="block">约束</div>
+          <div class="op">+</div>
+          <div class="block">验收</div>
+        </div>
+        <p class="t-body-lg c-body">把模糊想法写成 AI 能执行、你能打勾的描述。</p>
+        <aside class="notes">现场最好让一位运营说一个点子，带大家套进“目标 / 约束 / 验收”。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">BRIEF TEMPLATE</span>
+        <h2 class="small-title">写需求前，先回答 5 个问题</h2>
+        <div class="step-grid">
+          <div class="step"><span class="idx">01</span><span class="txt">做什么</span></div>
+          <div class="step"><span class="idx">02</span><span class="txt">给谁用</span></div>
+          <div class="step"><span class="idx">03</span><span class="txt">怎么用</span></div>
+          <div class="step"><span class="idx">04</span><span class="txt">输入输出</span></div>
+          <div class="step"><span class="idx">05</span><span class="txt">什么算完成</span></div>
+          <div class="step"><span class="idx">CHECK</span><span class="txt">3–5 条验收</span></div>
+          <div class="step"><span class="idx">RULE</span><span class="txt">不要空话</span></div>
+          <div class="step"><span class="idx">OUT</span><span class="txt">产品共识</span></div>
+        </div>
+        <aside class="notes">强调验收要能一条条打勾，不要写“做个好用的评论工具”。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">COPY PROMPT</span>
+        <h2 class="small-title">三段式需求 Prompt</h2>
+        <div class="prompt-box">我想做一个「App Store 评论分析」Chrome 浏览器插件。
+
+背景：经常需要看 App Store 评论，手动翻评论和整理差评很耗时间。
+用户：内部业务同学，不需要登录注册。
+目标：粘贴 App Store 应用链接，自动抓取评论并展示。
+约束：manifest v3；用公开 RSS/JSON 接口；不接后端，本地保存即可。
+验收：能输入链接、选国家、抓评论；显示评分/标题/正文/作者；顶部显示总数和平均评分。</div>
+        <aside class="notes">这页不用逐字讲完，可以说“这段之后会作为小抄给大家”。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">SYSTEM SPLIT</span>
+        <h2 class="t-display-sm">别让 AI 一口吞下整个项目</h2>
+        <div class="three-col">
+          <div class="spec-cell"><span class="idx">INPUT</span><div class="title">输入模块</div><div class="desc">链接、App ID、国家地区。</div></div>
+          <div class="spec-cell"><span class="idx">FETCH</span><div class="title">抓取模块</div><div class="desc">调用接口，拿原始评论。</div></div>
+          <div class="spec-cell"><span class="idx">VIEW</span><div class="title">展示模块</div><div class="desc">列表、评分、作者、正文。</div></div>
+          <div class="spec-cell"><span class="idx">STATS</span><div class="title">统计模块</div><div class="desc">总数、平均分、关键词。</div></div>
+          <div class="spec-cell"><span class="idx">AI</span><div class="title">AI 模块</div><div class="desc">差评总结、问题归类、建议。</div></div>
+          <div class="spec-cell"><span class="idx">SHIP</span><div class="title">发布模块</div><div class="desc">打包、说明、分享给同事。</div></div>
+        </div>
+        <aside class="notes">不是看一个按钮，而是看用户怎么进入、数据怎么来、结果怎么展示、怎么分享。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">PLAN FIRST</span>
+        <h2 class="t-display-sm">先让 AI 规划，别急着要代码</h2>
+        <ol class="takeaways">
+          <li><span class="body">它会分成几个文件。</span></li>
+          <li><span class="body">数据从哪里来，链接怎么解析。</span></li>
+          <li><span class="body">分几步实现，哪些先不做。</span></li>
+        </ol>
+        <aside class="notes">类比：装修前先看效果图，别砖砌一半才说“我要的不是这样”。</aside>
+      </section>
+
+      <section class="frame center stack-xl">
+        <span class="t-label c-blue">MVP LOOP</span>
+        <h2 class="t-display-sm">第一版只追求核心闭环</h2>
+        <div class="formula">
+          <div class="block">输入链接</div>
+          <div class="op">→</div>
+          <div class="block">抓到评论</div>
+          <div class="op">→</div>
+          <div class="block">展示统计</div>
+        </div>
+        <aside class="notes">不要一开始追求漂亮、图表、关键词、AI 总结。第一版唯一目标是能跑通。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">CALIBRATION</span>
+        <h2 class="t-display-sm">先做一个校准页</h2>
+        <ol class="takeaways">
+          <li><span class="body">App Store 链接输入框。</span></li>
+          <li><span class="body">国家/地区选择。</span></li>
+          <li><span class="body">抓取评论按钮。</span></li>
+          <li><span class="body">空状态和统计区域。</span></li>
+        </ol>
+        <aside class="notes">界面能最快暴露 AI 是否理解跑偏。先不接真实数据，成本最低。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">FILES</span>
+        <h2 class="t-display-sm">不用看懂每一行，先认得三样</h2>
+        <div class="three-col">
+          <div class="spec-cell"><span class="idx">manifest.json</span><div class="title">插件身份证</div><div class="desc">叫什么、要什么权限。</div></div>
+          <div class="spec-cell"><span class="idx">popup.html</span><div class="title">小窗口界面</div><div class="desc">点插件图标弹出来的样子。</div></div>
+          <div class="spec-cell"><span class="idx">popup.js</span><div class="title">干活脚本</div><div class="desc">抓评论、做统计、处理点击。</div></div>
+        </div>
+        <aside class="notes">你的工作是看效果、提要求，不是逐行读代码。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">RUN IT</span>
+        <h2 class="small-title">把插件加载到 Chrome</h2>
+        <ol class="takeaways">
+          <li><span class="body">把文件放进同一个文件夹。</span></li>
+          <li><span class="body">打开 chrome://extensions。</span></li>
+          <li><span class="body">打开开发者模式，加载已解压扩展。</span></li>
+          <li><span class="body">点右上角插件图标，开始试运行。</span></li>
+        </ol>
+        <aside class="notes">这是全场最有魔力的动手时刻，留足时间给大家自己点。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">ITERATION</span>
+        <h2 class="t-display-sm">迭代主循环：一次只加一个功能</h2>
+        <div class="formula">
+          <div class="block">加一个</div>
+          <div class="op">→</div>
+          <div class="block">跑一下</div>
+          <div class="op">→</div>
+          <div class="block">再继续</div>
+        </div>
+        <aside class="notes">核心手感：小步、可运行、随时能回退。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">ADD FEATURE</span>
+        <h2 class="small-title">加功能 Prompt</h2>
+        <div class="prompt-box">很好。现在加一个功能：
+把评论按评分（1–5 星）做一个分布条形图，
+一眼看出好评多还是差评多。
+其它地方不要改。</div>
+        <aside class="notes">“其它地方不要改”非常关键，能减少 AI 顺手大改。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">BACKLOG</span>
+        <h2 class="t-display-sm">继续滚雪球，但每次一条</h2>
+        <div class="three-col">
+          <div class="spec-cell"><span class="idx">STATS</span><div class="title">好评率</div><div class="desc">4–5 星占比。</div></div>
+          <div class="spec-cell"><span class="idx">FILTER</span><div class="title">只看差评</div><div class="desc">筛 1–2 星评论。</div></div>
+          <div class="spec-cell"><span class="idx">EXPORT</span><div class="title">导出 CSV</div><div class="desc">发给同事继续分析。</div></div>
+          <div class="spec-cell"><span class="idx">KEYWORDS</span><div class="title">关键词</div><div class="desc">看用户集中吐槽什么。</div></div>
+          <div class="spec-cell"><span class="idx">PAGES</span><div class="title">多页抓取</div><div class="desc">一次拿更多评论。</div></div>
+          <div class="spec-cell"><span class="idx">MARKETS</span><div class="title">国家对比</div><div class="desc">不同市场的评价差异。</div></div>
+        </div>
+        <aside class="notes">让大家看到小工具可以这样长大，但每次只做一个边界清楚的小任务。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">FEEDBACK</span>
+        <h2 class="small-title">反馈修改：现象 + 预期 + 要求</h2>
+        <div class="prompt-box">现象：
+点击“抓取”后，按钮没有任何变化，用户不知道是不是在加载。
+
+预期：
+按钮应该变成“抓取中...”，并且暂时不能重复点击。
+
+修改要求：
+只改按钮加载状态和防重复点击，不要改评论列表和接口逻辑。</div>
+        <aside class="notes">不要只说“不对”“不好用”。这套模板适合功能、界面、文案和流程。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">UI FIX</span>
+        <h2 class="t-display-sm">不满意界面？用截图，别用嘴</h2>
+        <ol class="takeaways">
+          <li><span class="body">贴截图，让 AI 看到现状。</span></li>
+          <li><span class="body">指出要改哪里，不要抽象说“高级”。</span></li>
+          <li><span class="body">一次只说几个具体点，布局不要动。</span></li>
+        </ol>
+        <aside class="notes">一张截图加具体指令，胜过十句形容词。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">BACKUP</span>
+        <h2 class="t-display-sm">敢大胆改，是因为随时能回退</h2>
+        <div class="two-col">
+          <div class="stat"><span class="num">v1</span><span class="label">能跑就复制一份</span></div>
+          <div class="stat"><span class="num">Git</span><span class="label">进阶版本备份</span></div>
+        </div>
+        <p class="t-body-lg c-body">改乱了不可怕，能跑的版本才值钱。</p>
+        <aside class="notes">给安全感。新手最怕改坏，先教最简单的复制文件夹，后面再提 Git。</aside>
+      </section>
+
+      <section class="frame center stack-xl">
+        <span class="t-label c-blue">DEBUG</span>
+        <h2 class="t-display-sm">报错不是坏事，报错是线索</h2>
+        <p class="t-body-lg c-body">插件白屏 / 点了没反应：右键小窗口 → 检查 → 控制台 → 复制红色报错。</p>
+        <aside class="notes">报错信息是给 AI 的线索，不是给你看懂的。你只负责搬运。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">FIRST AID</span>
+        <h2 class="small-title">急救三板斧</h2>
+        <ol class="takeaways">
+          <li><span class="body">贴完整报错，不要自己转述。</span></li>
+          <li><span class="body">同一问题超过 2 次不对，新开会话。</span></li>
+          <li><span class="body">缩小范围：只改抓取，不动其它。</span></li>
+        </ol>
+        <aside class="notes">不要不停说“还是不行”。换思路：贴报错、开新会话、缩小范围。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">ERROR PROMPT</span>
+        <h2 class="small-title">修报错 Prompt</h2>
+        <div class="prompt-box">现象：
+[我做了什么操作，然后发生了什么]
+
+完整报错：
+[把红色报错整段粘进来]
+
+预期：
+[我原本期待发生什么]
+
+修改要求：
+请先判断原因，再只修改相关文件。不要顺手重构其它功能。</div>
+        <aside class="notes">这是排错页最实用的模板，可以让大家拍照带走。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">COMMON ISSUES</span>
+        <h2 class="small-title">常见问题对照表</h2>
+        <table class="table">
+          <tr><th>现象</th><th>大概率原因</th><th>怎么办</th></tr>
+          <tr><td>加载插件时报错</td><td>manifest 或文件名不对</td><td>让 AI 检查文件清单</td></tr>
+          <tr><td>点抓取没反应</td><td>脚本有小错</td><td>控制台报错贴回去</td></tr>
+          <tr><td>抓不到评论</td><td>App ID 或接口问题</td><td>链接 + 报错一起发</td></tr>
+          <tr><td>改了没变化</td><td>扩展没刷新</td><td>回扩展页点刷新</td></tr>
+        </table>
+        <aside class="notes">这页可以当速查卡。现场演示时故意制造错误会更有说服力。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">RESTART</span>
+        <h2 class="t-display-sm">什么时候该推倒重来</h2>
+        <div class="two-col">
+          <div class="spec-cell"><span class="idx">SIGNAL</span><div class="title">一个功能改了五六次还不对</div><div class="desc">旧对话可能被错误尝试污染。</div></div>
+          <div class="spec-cell"><span class="idx">ACTION</span><div class="title">退回上个能跑版本</div><div class="desc">新开会话，重新、更清楚地说一遍。</div></div>
+        </div>
+        <aside class="notes">沉没成本不值得心疼。能跑的版本才值钱。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">PRODUCTIZE</span>
+        <h2 class="t-display-sm">从玩具到能给别人用</h2>
+        <ol class="takeaways">
+          <li><span class="body">链接填错：友好提示，不要报错。</span></li>
+          <li><span class="body">没有评论：告诉用户原因。</span></li>
+          <li><span class="body">正在抓取：显示加载中，禁止重复点击。</span></li>
+          <li><span class="body">接口失败：提示重试，不要白屏。</span></li>
+        </ol>
+        <aside class="notes">边界情况是“我自己能用”和“别人能用”的分水岭。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">SMOKE TEST</span>
+        <h2 class="small-title">让 AI 帮你设计测试清单</h2>
+        <div class="prompt-box">请帮我为这个插件设计一份最基础的冒烟测试清单。
+要求：
+- 覆盖正常流程、错误输入、无评论、网络失败、重复点击
+- 每条测试写清楚：操作步骤、预期结果、是否通过
+- 先不要写复杂自动化测试，用我能手动照着测的方式</div>
+        <aside class="notes">把专业做法翻译成新手能用的形式：连测试都能让 AI 帮你写。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">SECURITY</span>
+        <h2 class="t-display-sm">数据安全与隐私：上线前必查</h2>
+        <ol class="takeaways">
+          <li><span class="body">不要把密码、密钥、API Key 写死在代码里。</span></li>
+          <li><span class="body">评论和分析结果，不要随手贴到公网工具。</span></li>
+          <li><span class="body">拿不准，就找懂技术的同事看权限和数据。</span></li>
+        </ol>
+        <aside class="notes">尤其 Part 8 接 AI 时要提醒。能跑不等于能安全上线。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">SHIP CHECK</span>
+        <h2 class="small-title">上线前验收清单</h2>
+        <div class="step-grid">
+          <div class="step"><span class="idx">01</span><span class="txt">验收全过</span></div>
+          <div class="step"><span class="idx">02</span><span class="txt">错输入不崩</span></div>
+          <div class="step"><span class="idx">03</span><span class="txt">加载失败有提示</span></div>
+          <div class="step"><span class="idx">04</span><span class="txt">冒烟测试</span></div>
+          <div class="step"><span class="idx">05</span><span class="txt">无密钥泄露</span></div>
+          <div class="step"><span class="idx">06</span><span class="txt">别人电脑能跑</span></div>
+          <div class="step"><span class="idx">07</span><span class="txt">说明清楚</span></div>
+          <div class="step"><span class="idx">08</span><span class="txt">数据合规</span></div>
+        </div>
+        <aside class="notes">给同事用之前，一定按这张单子过一遍。</aside>
+      </section>
+
+      <section class="frame center stack-xl">
+        <span class="t-label c-blue">AI APP</span>
+        <h2 class="t-display-sm">让普通应用变成 AI 应用</h2>
+        <p class="t-body-lg c-body compact-title">抓评论和做统计是普通应用；让 AI 读懂差评、归纳问题、生成建议，就是 AI 应用。</p>
+        <aside class="notes">这是全场高光。强调 AI 是用来读懂一堆自然语言的，不是每一步都要用 AI。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">AI SUMMARY</span>
+        <h2 class="small-title">AI 总结 Prompt</h2>
+        <div class="prompt-box">我想给评论分析插件加一个“AI 总结”按钮：
+点一下，把抓到的差评（1–3 星）发给大模型，让它返回：
+- 用户最常抱怨的 3 个问题
+- 每个问题配一条改进建议
+先告诉我需要准备什么，再教我一步步安全地接上。
+别把密钥直接写进插件代码里。</div>
+        <aside class="notes">点到为止。真接入涉及密钥和可能的中转服务，属于下一步，但演示效果很好。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">WHERE AI FITS</span>
+        <h2 class="t-display-sm">一句话判断：哪里该塞 AI</h2>
+        <div class="two-col">
+          <div class="spec-cell"><span class="idx">USE AI</span><div class="title">理解 / 生成 / 判断</div><div class="desc">总结、归类、翻译、回复、提建议。</div></div>
+          <div class="spec-cell"><span class="idx">NO AI</span><div class="title">计算 / 排序 / 统计</div><div class="desc">数星星、算平均分、统计词频，普通代码更稳。</div></div>
+        </div>
+        <aside class="notes">防止“什么都用 AI”。AI 用在理解、生成、判断；普通逻辑用于确定性计算。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">RELEASE</span>
+        <h2 class="small-title">三种发布方式，由简到繁</h2>
+        <table class="table">
+          <tr><th>方式</th><th>怎么做</th><th>适合</th></tr>
+          <tr><td>压缩包直接发</td><td>插件文件夹打 zip</td><td>给几个同事用</td></tr>
+          <tr><td>打包分发</td><td>Chrome 打包扩展或内部分发</td><td>团队统一装</td></tr>
+          <tr><td>上架商店</td><td>上传 Chrome Web Store</td><td>给所有人用</td></tr>
+        </table>
+        <aside class="notes">铁律：先让同事能用起来，再慢慢优化。内部分享一定要附使用说明。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">PRINCIPLES</span>
+        <h2 class="t-display-sm">迭代节奏五原则</h2>
+        <ol class="takeaways">
+          <li><span class="body">小步：一次一个功能。</span></li>
+          <li><span class="body">可运行：每步都保持能装、能用。</span></li>
+          <li><span class="body">常验收：按最初标准一条条对。</span></li>
+          <li><span class="body">敢回退：乱了就回上一个能跑版本。</span></li>
+          <li><span class="body">早发布：别在自己电脑上磨太久。</span></li>
+        </ol>
+        <aside class="notes">这是 vibe coding 的手感。任何应用都适用。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">EMERGENCY CARD</span>
+        <h2 class="small-title">四类卡壳，一句话解法</h2>
+        <table class="table">
+          <tr><th>卡在哪</th><th>一句话解法</th></tr>
+          <tr><td>做出来不是我要的</td><td>补约束和验收，说清不要什么</td></tr>
+          <tr><td>越改越乱</td><td>新开会话，重新讲一遍需求</td></tr>
+          <tr><td>报错看不懂</td><td>红色报错整段贴回去</td></tr>
+          <tr><td>需求总做不对</td><td>拆小，一次只让它改一个点</td></tr>
+        </table>
+        <aside class="notes">这页适合让大家拍照，作为现场急救卡。</aside>
+      </section>
+
+      <section class="frame left stack-xl">
+        <span class="t-label c-blue">ASSETS</span>
+        <h2 class="t-display-sm">每做完一个项目，都沉淀资产</h2>
+        <div class="three-col">
+          <div class="spec-cell"><span class="idx">PROMPTS</span><div class="title">常用提示</div><div class="desc">需求、拆系统、修报错、发布。</div></div>
+          <div class="spec-cell"><span class="idx">CHECKLISTS</span><div class="title">测试清单</div><div class="desc">冒烟测试、上线前验收。</div></div>
+          <div class="spec-cell"><span class="idx">RULES</span><div class="title">个人规则</div><div class="desc">中文回答；先最小版本；只改指定部分。</div></div>
+        </div>
+        <aside class="notes">这就是个人 AI 使用手册的雏形。每做完一个项目，下一次会更快。</aside>
+      </section>
+
+      <section class="frame left stack-lg">
+        <span class="t-label c-blue">12 STEPS</span>
+        <h2 class="small-title">从 0 到发布，就这 12 步</h2>
+        <div class="step-grid">
+          <div class="step"><span class="idx">00</span><span class="txt">选工具</span></div>
+          <div class="step"><span class="idx">01</span><span class="txt">小点子</span></div>
+          <div class="step"><span class="idx">02</span><span class="txt">三段式需求</span></div>
+          <div class="step"><span class="idx">03</span><span class="txt">拆系统</span></div>
+          <div class="step"><span class="idx">04</span><span class="txt">先规划</span></div>
+          <div class="step"><span class="idx">05</span><span class="txt">第一版</span></div>
+          <div class="step"><span class="idx">06</span><span class="txt">加载运行</span></div>
+          <div class="step"><span class="idx">07</span><span class="txt">单点迭代</span></div>
+          <div class="step"><span class="idx">08</span><span class="txt">模板反馈</span></div>
+          <div class="step"><span class="idx">09</span><span class="txt">贴报错</span></div>
+          <div class="step"><span class="idx">10</span><span class="txt">收口验收</span></div>
+          <div class="step"><span class="idx">11</span><span class="txt">发布分享</span></div>
+        </div>
+        <aside class="notes">回到开头的流程图，首尾呼应。让听众知道自己可以照这个顺序复盘。</aside>
+      </section>
+
+      <section class="frame center stack-xl">
+        <span class="t-label c-blue">CLOSING</span>
+        <blockquote class="pull-quote">不是教你写代码，是教你把想法做出来。</blockquote>
+        <p class="t-body-lg c-body compact-title">Vibe Coding = 说清楚意图 + 拆清楚系统 + 盯住验收 + 一步步改到好</p>
+        <aside class="notes">最后收回全场主线。可以留作业：一周内用今天流程做出一个属于自己的小工具。</aside>
+      </section>
+
+      <section class="frame cover center stack-xl">
+        <span class="t-label c-blue">THANK YOU · Q&A</span>
+        <h2 class="t-display-lg wide-title">现在，轮到你<br>把想法做出来</h2>
+        <span class="m-slash"></span>
+        <p class="t-title-md c-body cover-sub">程立 · 数智技术部 · AI算法工程师</p>
+        <aside class="notes">结束停留页。可以邀请大家现场提问，也可以把问题聚焦到“你每天最想自动化的一件事是什么”。</aside>
+      </section>
+    </div>
+
+    <div class="progress"><i></i></div>
+    <div class="page-num t-mono">01</div>
+  </div>
+
+  <script>
+    const frames = [...document.querySelectorAll('.frame')];
+    let i = 0;
+    const bar = document.querySelector('.progress > i');
+    const num = document.querySelector('.page-num');
+    const slide = document.querySelector('.slide');
+    const deck = document.querySelector('.deck');
+    const snakeCanvas = document.getElementById('snakeCanvas');
+    const snakeCtx = snakeCanvas?.getContext('2d');
+    const snakeScoreEl = document.getElementById('snakeScore');
+    const snakeBestEl = document.getElementById('snakeBest');
+    const snakeStatusEl = document.getElementById('snakeStatus');
+    const snakeStartBtn = document.getElementById('snakeStart');
+    const snakePauseBtn = document.getElementById('snakePause');
+    const snakeResetBtn = document.getElementById('snakeReset');
+
+    const snakeGame = {
+      cells: 25,
+      size: 24,
+      timer: null,
+      running: false,
+      over: false,
+      score: 0,
+      best: 0,
+      snake: [],
+      food: { x: 18, y: 12 },
+      dir: { x: 1, y: 0 },
+      nextDir: { x: 1, y: 0 }
+    };
+
+    function setSnakeStatus(text) {
+      if (snakeStatusEl) snakeStatusEl.textContent = text;
+      if (snakeScoreEl) snakeScoreEl.textContent = String(snakeGame.score);
+      if (snakeBestEl) snakeBestEl.textContent = String(snakeGame.best);
+    }
+
+    function resetSnake() {
+      snakeGame.running = false;
+      snakeGame.over = false;
+      snakeGame.score = 0;
+      snakeGame.snake = [
+        { x: 12, y: 12 },
+        { x: 11, y: 12 },
+        { x: 10, y: 12 }
+      ];
+      snakeGame.dir = { x: 1, y: 0 };
+      snakeGame.nextDir = { x: 1, y: 0 };
+      placeSnakeFood();
+      stopSnakeTimer();
+      setSnakeStatus('点击“开始游戏”');
+      drawSnake();
+    }
+
+    function stopSnakeTimer() {
+      if (snakeGame.timer) clearInterval(snakeGame.timer);
+      snakeGame.timer = null;
+    }
+
+    function startSnake() {
+      if (!snakeCtx) return;
+      if (snakeGame.over || snakeGame.snake.length === 0) resetSnake();
+      snakeGame.running = true;
+      snakeGame.over = false;
+      stopSnakeTimer();
+      snakeGame.timer = setInterval(stepSnake, 120);
+      setSnakeStatus('游戏进行中');
+    }
+
+    function pauseSnake() {
+      if (!snakeGame.running) return;
+      snakeGame.running = false;
+      stopSnakeTimer();
+      setSnakeStatus('已暂停');
+    }
+
+    function placeSnakeFood() {
+      const occupied = new Set(snakeGame.snake.map(p => `${p.x},${p.y}`));
+      do {
+        snakeGame.food = {
+          x: Math.floor(Math.random() * snakeGame.cells),
+          y: Math.floor(Math.random() * snakeGame.cells)
+        };
+      } while (occupied.has(`${snakeGame.food.x},${snakeGame.food.y}`));
+    }
+
+    function setSnakeDirection(key) {
+      const map = {
+        ArrowUp: { x: 0, y: -1 },
+        ArrowDown: { x: 0, y: 1 },
+        ArrowLeft: { x: -1, y: 0 },
+        ArrowRight: { x: 1, y: 0 }
+      };
+      const next = map[key];
+      if (!next) return false;
+      if (next.x + snakeGame.dir.x === 0 && next.y + snakeGame.dir.y === 0) return true;
+      snakeGame.nextDir = next;
+      return true;
+    }
+
+    function stepSnake() {
+      snakeGame.dir = snakeGame.nextDir;
+      const head = snakeGame.snake[0];
+      const next = { x: head.x + snakeGame.dir.x, y: head.y + snakeGame.dir.y };
+      const hitWall = next.x < 0 || next.y < 0 || next.x >= snakeGame.cells || next.y >= snakeGame.cells;
+      const hitSelf = snakeGame.snake.some(p => p.x === next.x && p.y === next.y);
+      if (hitWall || hitSelf) {
+        snakeGame.running = false;
+        snakeGame.over = true;
+        stopSnakeTimer();
+        setSnakeStatus('游戏结束，点击开始重来');
+        drawSnake();
+        return;
+      }
+
+      snakeGame.snake.unshift(next);
+      const ate = next.x === snakeGame.food.x && next.y === snakeGame.food.y;
+      if (ate) {
+        snakeGame.score += 10;
+        snakeGame.best = Math.max(snakeGame.best, snakeGame.score);
+        placeSnakeFood();
+      } else {
+        snakeGame.snake.pop();
+      }
+      setSnakeStatus('游戏进行中');
+      drawSnake();
+    }
+
+    function drawSnake() {
+      if (!snakeCtx) return;
+      const { cells, size } = snakeGame;
+      snakeCtx.fillStyle = '#0d0d0d';
+      snakeCtx.fillRect(0, 0, cells * size, cells * size);
+
+      snakeCtx.strokeStyle = '#262626';
+      snakeCtx.lineWidth = 1;
+      for (let n = 0; n <= cells; n++) {
+        const p = n * size + 0.5;
+        snakeCtx.beginPath();
+        snakeCtx.moveTo(p, 0);
+        snakeCtx.lineTo(p, cells * size);
+        snakeCtx.stroke();
+        snakeCtx.beginPath();
+        snakeCtx.moveTo(0, p);
+        snakeCtx.lineTo(cells * size, p);
+        snakeCtx.stroke();
+      }
+
+      snakeCtx.fillStyle = '#e22718';
+      snakeCtx.fillRect(snakeGame.food.x * size + 4, snakeGame.food.y * size + 4, size - 8, size - 8);
+
+      snakeGame.snake.forEach((part, idx) => {
+        snakeCtx.fillStyle = idx === 0 ? '#0066b1' : '#003d78';
+        snakeCtx.fillRect(part.x * size + 2, part.y * size + 2, size - 4, size - 4);
+      });
+
+      if (snakeGame.over) {
+        snakeCtx.fillStyle = 'rgba(13, 13, 13, 0.72)';
+        snakeCtx.fillRect(0, 0, cells * size, cells * size);
+        snakeCtx.fillStyle = '#ffffff';
+        snakeCtx.font = '700 48px Inter, sans-serif';
+        snakeCtx.textAlign = 'center';
+        snakeCtx.fillText('GAME OVER', cells * size / 2, cells * size / 2 - 12);
+        snakeCtx.fillStyle = '#bbbbbb';
+        snakeCtx.font = '400 30px Inter, sans-serif';
+        snakeCtx.fillText('CLICK START TO RESTART', cells * size / 2, cells * size / 2 + 42);
+      }
+    }
+
+    function show(n) {
+      const previous = i;
+      i = Math.max(0, Math.min(frames.length - 1, n));
+      frames.forEach((f, k) => f.classList.toggle('is-active', k === i));
+      bar.style.width = ((i + 1) / frames.length * 100) + '%';
+      num.textContent = `${String(i + 1).padStart(2, '0')} / ${String(frames.length).padStart(2, '0')}`;
+      location.hash = String(i + 1);
+      if (frames[previous]?.classList.contains('snake-frame') && previous !== i) pauseSnake();
+      if (frames[i]?.classList.contains('snake-frame')) drawSnake();
+    }
+
+    function fit() {
+      const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+      deck.style.setProperty('--scale', s);
+    }
+
+    addEventListener('keydown', e => {
+      if (
+        frames[i]?.classList.contains('snake-frame') &&
+        snakeGame.running &&
+        ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)
+      ) {
+        e.preventDefault();
+        setSnakeDirection(e.key);
+        return;
+      }
+      if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) {
+        e.preventDefault();
+        show(i + 1);
+      }
+      if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) {
+        e.preventDefault();
+        show(i - 1);
+      }
+      if (e.key === 'Home') show(0);
+      if (e.key === 'End') show(frames.length - 1);
+      if (e.key.toLowerCase() === 'f') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      }
+    });
+
+    snakeStartBtn?.addEventListener('click', startSnake);
+    snakePauseBtn?.addEventListener('click', pauseSnake);
+    snakeResetBtn?.addEventListener('click', resetSnake);
+
+    addEventListener('resize', fit);
+    addEventListener('hashchange', () => {
+      const n = parseInt(location.hash.replace('#', ''), 10);
+      if (!Number.isNaN(n)) show(n - 1);
+    });
+
+    fit();
+    resetSnake();
+    const start = parseInt(location.hash.replace('#', ''), 10);
+    show(Number.isNaN(start) ? 0 : start - 1);
+  </script>
+</body>
+</html>

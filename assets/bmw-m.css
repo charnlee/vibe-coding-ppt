@@ -1,0 +1,273 @@
+/* ═══════════════════════════════════════════════════════════════════════
+ * BMW M × LECTURE HALL — reusable design system
+ * Extracted from insbotics.com/ai-share.
+ *
+ * Pure near-black canvas. UPPERCASE heavy display + Light body.
+ * BMW M tricolor as the ONLY accent. 0px corners. Hairline borders.
+ * Classroom-readable: label ≥ 32px, body ≥ 40px, display ≥ 88px.
+ * Fixed 1920×1080 canvas.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;800&family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
+:root {
+  /* ── CANVAS · near-black per BMW M ── */
+  --canvas:           #262626;
+  --surface-soft:     #0d0d0d;
+  --surface-card:     #1a1a1a;
+  --surface-elevated: #262626;
+  --carbon-gray:      #2b2b2b;
+
+  /* ── HAIRLINES · replace shadows & thick borders ── */
+  --hairline:        #3c3c3c;
+  --hairline-strong: #262626;
+
+  /* ── TEXT ── */
+  --on-dark:     #ffffff;
+  --body:        #bbbbbb;
+  --body-strong: #e6e6e6;
+  --muted:       #7e7e7e;
+
+  /* ── BMW M TRICOLOR · the ONLY accent · official values ── */
+  --m-blue-light: #0066b1;
+  --m-blue-dark:  #003d78;
+  --m-red:        #e22718;
+
+  /* ── TYPE FAMILIES ── */
+  --sans-en: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --sans-zh: "Noto Sans SC", "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif;
+  --sans:    var(--sans-zh), var(--sans-en);
+  --mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  /* ── CLASSROOM TYPE SCALE ── */
+  --t-mega:       320px;
+  --t-display-xl: 240px;
+  --t-display-lg: 180px;
+  --t-display-md: 120px;
+  --t-display-sm: 88px;
+  --t-title-lg:   64px;
+  --t-title-md:   52px;
+  --t-body-lg:    52px;
+  --t-body-md:    44px;
+  --t-body-sm:    36px;
+  --t-label:      32px;
+
+  /* ── SPACING · 4px base ── */
+  --s-xxs: 4px; --s-xs: 8px; --s-sm: 12px; --s-md: 16px;
+  --s-lg: 24px; --s-xl: 40px; --s-xxl: 64px; --s-section: 96px;
+
+  /* ── CANVAS DIMS ── */
+  --slide-w: 1920px;
+  --slide-h: 1080px;
+  --margin:  96px;
+
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--canvas);
+  color: var(--on-dark);
+  font-family: var(--sans);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ── TYPE LADDER · big headings are UPPERCASE + negative tracking ── */
+.t-mega       { font-family: var(--sans); font-size: var(--t-mega);       font-weight: 800; line-height: 0.95; letter-spacing: -0.025em; text-transform: uppercase; }
+.t-display-xl { font-family: var(--sans); font-size: var(--t-display-xl); font-weight: 800; line-height: 1.0;  letter-spacing: -0.02em;  text-transform: uppercase; }
+.t-display-lg { font-family: var(--sans); font-size: var(--t-display-lg); font-weight: 900; line-height: 1.1;  letter-spacing: -0.015em; }
+.t-display-md { font-family: var(--sans); font-size: var(--t-display-md); font-weight: 900; line-height: 1.15; letter-spacing: -0.01em; }
+.t-display-sm { font-family: var(--sans); font-size: var(--t-display-sm); font-weight: 700; line-height: 1.2;  letter-spacing: 0; }
+.t-title-lg   { font-family: var(--sans); font-size: var(--t-title-lg);   font-weight: 700; line-height: 1.3;  letter-spacing: 0; }
+.t-title-md   { font-family: var(--sans); font-size: var(--t-title-md);   font-weight: 500; line-height: 1.35; letter-spacing: 0; }
+.t-body-lg    { font-family: var(--sans); font-size: var(--t-body-lg);    font-weight: 400; line-height: 1.5;  color: var(--body-strong); }
+.t-body-md    { font-family: var(--sans); font-size: var(--t-body-md);    font-weight: 400; line-height: 1.5;  color: var(--body); }
+.t-body-sm    { font-family: var(--sans); font-size: var(--t-body-sm);    font-weight: 400; line-height: 1.45; color: var(--body); }
+.t-label      { font-family: var(--sans); font-size: var(--t-label);      font-weight: 700; line-height: 1.3;  letter-spacing: 0.15em; text-transform: uppercase; }
+.t-mono       { font-family: var(--mono); font-weight: 700; }
+
+/* ── COLOR UTILITIES ── */
+.c-on-dark { color: var(--on-dark); }
+.c-body    { color: var(--body); }
+.c-muted   { color: var(--muted); }
+.c-red     { color: var(--m-red); }
+.c-blue    { color: var(--m-blue-light); }
+
+strong, .bold { font-weight: 700; color: var(--on-dark); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * SLIDE FRAME · fixed 1920×1080 · zero corners · hairline structure
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+.deck {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--canvas);
+  overflow: hidden;
+}
+
+.slide {
+  width: var(--slide-w);
+  height: var(--slide-h);
+  background: var(--canvas);
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  transform-origin: center center;
+}
+
+/* ── PERSISTENT BRAND MARK · top-left M-slash + label ── */
+.brand-mark {
+  position: absolute;
+  top: 64px;
+  left: var(--margin);
+  display: flex;
+  align-items: center;
+  gap: var(--s-lg);
+  z-index: 5;
+}
+.brand-mark .deck-label {
+  font-family: var(--sans);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--body);
+}
+
+/* ── FRAME SYSTEM · one .frame = one slide ── */
+.frame {
+  position: absolute;
+  inset: 0;
+  padding: 168px var(--margin) 96px;  /* top: brand-mark clearance · bottom: progress bar */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms var(--ease);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.frame.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+/* staggered rise-in of direct children */
+.frame.is-active > * { animation: rise 600ms var(--ease) both; }
+.frame.is-active > *:nth-child(1) { animation-delay:  60ms; }
+.frame.is-active > *:nth-child(2) { animation-delay: 160ms; }
+.frame.is-active > *:nth-child(3) { animation-delay: 260ms; }
+.frame.is-active > *:nth-child(4) { animation-delay: 360ms; }
+.frame.is-active > *:nth-child(5) { animation-delay: 460ms; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* cover pages let giant display type run edge-to-edge */
+.frame.cover { padding-left: 0; padding-right: 0; }
+
+/* ── LAYOUT VARIANTS ── */
+.left   { align-items: flex-start; text-align: left;   }
+.center { align-items: center;     text-align: center; }
+.bottom { justify-content: flex-end; }
+
+.stack-md  > * + * { margin-top: 32px; }
+.stack-lg  > * + * { margin-top: 56px; }
+.stack-xl  > * + * { margin-top: 80px; }
+.stack-xxl > * + * { margin-top: 120px; }
+
+.row        { display: flex; gap: 80px;  align-items: stretch; width: 100%; }
+.row-center { display: flex; gap: 240px; justify-content: center; align-items: center; width: 100%; }
+
+/* ── HAIRLINE DIVIDER · BMW M signature ── */
+.hairline { height: 1px; background: var(--hairline); border: 0; width: 100%; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * BMW M SIGNATURE MARKS
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── M MARK · 3 equal-width parallelograms · 30° slant · seamless ── */
+.m-mark { display: inline-flex; flex-shrink: 0; align-items: stretch; }
+.m-mark > i {
+  display: block;
+  height: 100%;
+  width: calc((100% + var(--mark-slant) * 2) / 3);
+  clip-path: polygon(var(--mark-slant) 0, 100% 0, calc(100% - var(--mark-slant)) 100%, 0 100%);
+}
+.m-mark > i + i { margin-left: calc(-1 * var(--mark-slant)); }
+.m-mark > i:nth-child(1) { background: var(--m-blue-light); }
+.m-mark > i:nth-child(2) { background: var(--m-blue-dark); }
+.m-mark > i:nth-child(3) { background: var(--m-red); }
+.m-mark-sm { width: 57px; height: 36px; --mark-slant: 21px; }
+.m-mark-md { width: 70px; height: 44px; --mark-slant: 25px; }
+.m-mark-lg { width: 88px; height: 56px; --mark-slant: 32px; }
+
+/* ── M SLASH · tricolor slanted bar under a big heading · fixed size ── */
+.m-slash {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 240px;
+  height: 16px;
+  background: linear-gradient(120deg,
+    var(--m-blue-light) 33%, var(--m-blue-dark) 0,
+    var(--m-blue-dark) 66%, var(--m-red) 0);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * COMPONENTS · all 0px corners, hairline borders (spec-cell aesthetic)
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── SPEC CARD · dashboard-parameter look ── */
+.spec-cell {
+  background: var(--surface-card);
+  border: 1px solid var(--hairline);
+  border-radius: 0;
+  padding: var(--s-xl);
+}
+
+/* ── MEGA STAT · a single climax number ── */
+.stat { display: flex; flex-direction: column; gap: var(--s-sm); }
+.stat .num   { font-family: var(--sans); font-size: var(--t-display-lg); font-weight: 900; line-height: 1; letter-spacing: -0.02em; color: var(--on-dark); }
+.stat .num.accent { color: var(--m-red); }
+.stat .label { font-family: var(--sans); font-size: var(--t-label); font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+
+/* ── PULL QUOTE ── */
+.pull-quote {
+  font-family: var(--sans);
+  font-size: var(--t-title-lg);
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--on-dark);
+  border-left: 4px solid var(--m-red);
+  padding-left: var(--s-xl);
+}
+
+/* ── NUMBERED TAKEAWAYS · red leading-zero counters + hairline rows ── */
+.takeaways { display: flex; flex-direction: column; list-style: none; counter-reset: take; }
+.takeaways li {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 40px;
+  align-items: baseline;
+  padding: 40px 0;
+  border-top: 1px solid var(--hairline);
+}
+.takeaways li:last-child { border-bottom: 1px solid var(--hairline); }
+.takeaways li::before {
+  counter-increment: take;
+  content: counter(take, decimal-leading-zero);
+  font-family: var(--sans);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--m-red);
+}
+.takeaways .body { font-family: var(--sans); font-size: var(--t-title-md); font-weight: 500; line-height: 1.4; color: var(--on-dark); }
+.takeaways .body strong { font-weight: 700; }
