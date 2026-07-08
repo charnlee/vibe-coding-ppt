@@ -119,6 +119,124 @@
       line-height: 1.35;
       color: var(--body);
     }
+    .brief-frame {
+      justify-content: flex-start;
+    }
+    .brief-frame > * + * {
+      margin-top: 42px;
+    }
+    .brief-page-title {
+      max-width: 1660px;
+      color: var(--on-dark);
+      font-size: 78px;
+      line-height: 1.14;
+      font-weight: 800;
+    }
+    .brief-lead {
+      max-width: 1540px;
+      color: var(--body);
+      font-size: 42px;
+      line-height: 1.42;
+    }
+    .brief-map {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px;
+      width: 100%;
+    }
+    .brief-card {
+      border: 1px solid var(--hairline);
+      background: var(--surface-card);
+      padding: 36px;
+      min-height: 330px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brief-card .idx {
+      display: block;
+      color: var(--m-blue-light);
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    .brief-card .title {
+      color: var(--on-dark);
+      font-size: 50px;
+      line-height: 1.18;
+      font-weight: 800;
+    }
+    .brief-card .desc {
+      color: var(--body);
+      font-size: 32px;
+      line-height: 1.38;
+    }
+    .brief-detail-grid {
+      display: grid;
+      grid-template-columns: 0.82fr 1.18fr;
+      gap: 44px;
+      width: 100%;
+      align-items: stretch;
+    }
+    .brief-statement {
+      border: 1px solid var(--hairline);
+      background: var(--surface-card);
+      padding: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+    }
+    .brief-statement .label {
+      color: var(--m-blue-light);
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    .brief-statement .main {
+      color: var(--on-dark);
+      font-size: 40px;
+      line-height: 1.22;
+      font-weight: 800;
+    }
+    .brief-statement .sub {
+      color: var(--body);
+      font-size: 26px;
+      line-height: 1.42;
+    }
+    .brief-list {
+      border-top: 1px solid var(--hairline);
+      border-left: 1px solid var(--hairline);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      background: var(--surface-card);
+    }
+    .brief-list li {
+      display: grid;
+      grid-template-columns: 132px 1fr;
+      gap: 24px;
+      border-right: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+      padding: 20px 28px;
+      min-height: 92px;
+    }
+    .brief-list .key {
+      color: var(--m-blue-light);
+      font-family: var(--mono);
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    .brief-list .value {
+      color: var(--body);
+      font-size: 26px;
+      line-height: 1.36;
+    }
     .prompt-box {
       width: 100%;
       background: var(--surface-soft);
@@ -1599,15 +1717,74 @@
         <aside class="notes">这个例子真实、有用、能演示。提醒：优先用公开评论 RSS/JSON 接口，不要让 AI 直接爬网页。</aside>
       </section>
 
-<section class="frame left stack-xl">
-        <span class="t-label c-blue">THREE-PART BRIEF</span>
-        <h2 class="t-display-sm">以 App Store 评论抓取分析插件为例</h2>
-        <div class="three-col">
-          <div class="spec-cell"><span class="idx">目标</span><div class="title">抓评论，看趋势</div><div class="desc">粘贴 App Store 里 app 链接，自动抓取用户评论，并展示评论列表和统计结果。</div></div>
-          <div class="spec-cell"><span class="idx">约束</span><div class="title">做 Chrome 插件</div><div class="desc">先在 Chrome 里打开使用；只拿公开可访问的评论；不做账号登录和复杂后台。</div></div>
-          <div class="spec-cell"><span class="idx">验收</span><div class="title">能一条条打勾</div><div class="desc">能选国家地区并抓取；能显示评分、标题、正文、作者；能展示总数和平均评分。</div></div>
+<section class="frame left brief-frame">
+        <span class="t-label c-blue">PROJECT BRIEF</span>
+        <h2 class="brief-page-title">先写清楚：总目标 / 总规则 / 总验收</h2>
+        <p class="brief-lead">不要一上来就让 AI 写代码。先把项目说明书讲清楚，AI 才知道往哪里做、做到哪里停、做到什么算完成。</p>
+        <div class="brief-map">
+          <div class="brief-card"><span class="idx">TOTAL GOAL</span><div class="title">总目标</div><div class="desc">我要做一个什么东西，给谁用，解决哪个具体工作问题。</div></div>
+          <div class="brief-card"><span class="idx">TOTAL RULES</span><div class="title">总规则</div><div class="desc">这次做成什么形态，先做到什么边界，哪些内容暂时不做。</div></div>
+          <div class="brief-card"><span class="idx">TOTAL ACCEPTANCE</span><div class="title">总验收</div><div class="desc">最后看到哪些功能和结果，才算第一版真的可用。</div></div>
         </div>
-        <aside class="notes">这一页把“三段式需求”落到具体例子上。重点强调：目标说清楚要解决什么，约束说清楚边界和不能做什么，验收说清楚做到哪些点才算第一版完成。</aside>
+        <aside class="notes">这页把“目标、约束、验收”改成更好懂的业务语言：总目标、总规则、总验收。重点讲：这是开工前写给 AI 的项目说明书。</aside>
+      </section>
+
+<section class="frame left brief-frame">
+        <span class="t-label c-blue">TOTAL GOAL</span>
+        <h2 class="brief-page-title">总目标：先说明要解决谁的什么问题</h2>
+        <div class="brief-detail-grid">
+          <div class="brief-statement">
+            <span class="label">ONE SENTENCE</span>
+            <div class="main">做一个 Chrome 插件，帮助运营和品牌同学快速抓取并分析 App Store 用户评论。</div>
+            <div class="sub">输入 App Store 里的 app 链接，选择国家和地区，自动抓取评论，展示统计，并让 AI 总结差评里的问题、优先级和建议方案。</div>
+          </div>
+          <ol class="brief-list">
+            <li><span class="key">USER</span><span class="value">给运营、品牌、客户体验等需要看用户反馈的同学使用。</span></li>
+            <li><span class="key">INPUT</span><span class="value">粘贴 App Store 里的 app 链接，选择国家和地区。</span></li>
+            <li><span class="key">OUTPUT</span><span class="value">评论列表、评分统计、评论数量、评分分布、差评问题总结。</span></li>
+            <li><span class="key">VALUE</span><span class="value">不用手动翻评论，把“用户在抱怨什么”快速变成可讨论的改进清单。</span></li>
+          </ol>
+        </div>
+        <aside class="notes">讲总目标时，不要只说“做一个插件”，要说清楚给谁用、输入什么、输出什么、业务价值是什么。</aside>
+      </section>
+
+<section class="frame left brief-frame">
+        <span class="t-label c-blue">TOTAL RULES</span>
+        <h2 class="brief-page-title">总规则：先约定这版怎么做，哪些先不做</h2>
+        <div class="brief-detail-grid">
+          <div class="brief-statement">
+            <span class="label">BOUNDARY</span>
+            <div class="main">第一版做 Chrome 插件，不做完整后台系统。</div>
+            <div class="sub">规则不是限制想象力，而是让 AI 不乱扩展。先把最小可用版本做出来，再决定下一版加什么。</div>
+          </div>
+          <ol class="brief-list">
+            <li><span class="key">FORM</span><span class="value">做成 Chrome 插件，在浏览器里打开使用；先不做独立网站和复杂后台。</span></li>
+            <li><span class="key">DATA</span><span class="value">只处理公开可访问的 App Store 评论，不做账号登录、绕权限、爬取私有数据。</span></li>
+            <li><span class="key">SCOPE</span><span class="value">第一版先支持单个 App、单个国家地区；多 App 对比和定时任务先不做。</span></li>
+            <li><span class="key">AI</span><span class="value">AI 分析先输出问题分类、优先级和建议方案；不追求复杂报表和自动决策。</span></li>
+          </ol>
+        </div>
+        <aside class="notes">讲总规则时，重点是“这版先不做什么”。非技术同学最容易让需求越写越大，规则可以把 AI 拉回第一版。</aside>
+      </section>
+
+<section class="frame left brief-frame">
+        <span class="t-label c-blue">TOTAL ACCEPTANCE</span>
+        <h2 class="brief-page-title">总验收：把“能用”写成可打勾的结果</h2>
+        <div class="brief-detail-grid">
+          <div class="brief-statement">
+            <span class="label">DONE MEANS</span>
+            <div class="main">不是“页面看起来差不多”，而是每个关键动作都能跑通。</div>
+            <div class="sub">验收写得越具体，AI 越容易自查，你也越容易判断它有没有真正完成。</div>
+          </div>
+          <ol class="brief-list">
+            <li><span class="key">FETCH</span><span class="value">能粘贴 App Store app 链接，选择国家和地区，并成功抓取评论。</span></li>
+            <li><span class="key">LIST</span><span class="value">能展示评分、标题、正文、作者、时间等评论字段。</span></li>
+            <li><span class="key">STATS</span><span class="value">能展示评论总数、平均评分、评分分布和差评数量。</span></li>
+            <li><span class="key">AI</span><span class="value">能让 AI 总结差评问题、排优先级，并给出建议解决方案。</span></li>
+            <li><span class="key">ERROR</span><span class="value">链接无效、抓取失败或没有评论时，要有明确提示，而不是空白页面。</span></li>
+          </ol>
+        </div>
+        <aside class="notes">讲总验收时，可以提醒大家：验收不是技术标准，是业务能不能用的判断标准。每一条都应该能现场点开看结果。</aside>
       </section>
 
       <section class="frame left stack-xl">
